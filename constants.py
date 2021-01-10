@@ -1,0 +1,2 @@
+BLANK_TILE = 9
+BOMB = 10
