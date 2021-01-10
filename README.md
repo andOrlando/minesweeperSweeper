@@ -11,5 +11,6 @@ and just do whatever the bot tells you to do. If you want it to go back to norma
 
 That being said, minesweeper is inherently chance based so there's a decent chance you still fail and it'll calculate those probabilities as best it can.
 
-requires discord.py and python3 to run\
-to get the former check out the discord.py github thing
+requires discord.py and python3 to run, as well as a discord bot\
+to get the former check out the discord.py github thing\
+also, as for your token, you can either replace the `open("token.txt", "r").read()` stuff with just a string of your token or drop in a new text file called "token.txt" that contains your token.
