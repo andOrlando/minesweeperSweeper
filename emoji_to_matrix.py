@@ -19,14 +19,9 @@ game_header = "⬛ 🇦 🇧 🇨 🇩 🇪 🇫 🇬"
 
 def emoji_to_matrix(message):
     content = message.content
-    # checks to make sure the game header is in the message
-    # when ready for github concatenate the two
-    if not game_header in content:
-        print("game header not in content")
+    # checks to make sure the game header is in the message and it's not the rematch message
+    if not game_header in content or rematch_message in content:
         return None
-    if rematch_message in content:
-        print("is rematch")
-        return "rematch"
 
     # removes text from message if necessary
     if header_message in content:

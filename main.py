@@ -1,5 +1,5 @@
 from client import MyClient
-token = "your token here"
+token = open("token.txt", "r").read()
 
 if __name__ == '__main__':
     client = MyClient()

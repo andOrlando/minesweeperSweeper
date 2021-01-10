@@ -2,11 +2,6 @@
 0-8 = normal numbers
 9 = unknown
 10 = bomb
-
-HOW TO WIN GAMES OF MINESWEEPER
-first pick the center
--check all numbers for bomb availability
-
 """
 from math import floor
 from constants import *

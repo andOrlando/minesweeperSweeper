@@ -2,18 +2,6 @@ import discord
 from emoji_to_matrix import emoji_to_matrix
 from matrix_solver import MatrixSolver
 
-'''
-HOW ITS GOING TO WORK
--you start the minesweeper game
--you type fuck minesweeper
--bot looks for active minesweeper game
--bot tells you what to do, waits for you to do something, then tells you what to do next every time the thing edits it
-'''
-
-
-def is_rob(author):
-    return author.id == 383995098754711555
-
 class MyClient(discord.Client):
 
     def __init__(self, **options):
@@ -32,7 +20,8 @@ class MyClient(discord.Client):
             self.running = False
 
     async def on_message_edit(self, _, after):
-        if is_rob(after.author) and self.running:
+        # GamesROB's ID
+        if after.author.id == 383995098754711555 and self.running:
             #pass message to emoji_to_matrix
             matrix = emoji_to_matrix(after)
             if matrix == "rematch":
