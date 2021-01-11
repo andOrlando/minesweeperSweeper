@@ -1,7 +1,8 @@
-# minesweeper-sweeper
-solves GamesROB's minesweeper because I can't beat it without a robot myself
+# Minesweeper Sweeper
+Solves GamesROB's minesweeper (kind of) because I can't beat it without a robot myself
  
-Are you fed up with GamesROB's minesweeper? So am I. If you have this bot and you show your frustration, it'll do everything for you. All you have to do is type this simple line:
+Are you fed up with GamesROB's minesweeper? So am I. If you have this bot and you show your frustration, it'll do 
+everything for you. It'll even lose for you All you have to do is type this simple line:
 
 `GamesROB's minesweeper sucks`
 
@@ -9,8 +10,19 @@ and just do whatever the bot tells you to do. If you want it to go back to norma
 
 `nvm its not actually that bad`
 
-That being said, minesweeper is inherently chance based so there's a decent chance you still fail and it'll calculate those probabilities as best it can.
+That being said, minesweeper is inherently chance based so there's a decent chance you still fail and it'll calculate 
+those probabilities as best it can. It's quite simply a bad calculation though.
 
 requires discord.py and python3 to run, as well as a discord bot\
-to get the former check out the discord.py github thing\
-also, as for your token, you can either replace the `open("token.txt", "r").read()` stuff with just a string of your token or drop in a new text file called "token.txt" that contains your token.
+to get the former check out the [discord.py github thing](https://github.com/Rapptz/discord.py) \
+also, as for your token, you can either replace the `open("token.txt", "r").read()` stuff with just a string of your 
+token or drop in a new text file called "token.txt" that contains your token.
+
+This bot uses a "single-point" algorithm and then basically guesses probabilities for tiles. It's nowhere near perfect 
+and can barely go a step further than the guaranteed spots. For better algorithms see 
+[this paper](https://dash.harvard.edu/bitstream/handle/1/14398552/BECERRA-SENIORTHESIS-2015.pdf?sequence=1). Also it's 
+seriously flawed and I'm going to be fixing it promptly.
+
+If you want my bot on your server for some reason, which will basically be offline 99% of the time,
+[this is the link](https://discord.com/api/oauth2/authorize?client_id=797850288543367199&permissions=0&scope=bot). But 
+seriously, if you want to use this for some reason, you most likely don't want my bot. Just host it yourself.

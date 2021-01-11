@@ -41,8 +41,7 @@ def emoji_to_matrix(message):
 
         result.append(line)
 
-    # returns/prints the result
-    print(result)
+    # returns the result
     return result
 
 def emoji_to_number(emoji):

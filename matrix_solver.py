@@ -103,8 +103,6 @@ class MatrixSolver:
                             else:
                                 self.probabilities.append(probability_tuple)
 
-        #adds non-blank spaces
-
         if len(self.probabilities) != 0:
             min_probability = min(map(lambda item: item[0], self.probabilities))
             final = choice(list(filter(lambda prob: prob[0] == min_probability, self.probabilities)))
