@@ -1,28 +1,27 @@
 # Minesweeper Sweeper
-Solves GamesROB's minesweeper (kind of) because I can't beat it without a robot myself
+Solves GamesROB's minesweeper because I can't beat it without a robot myself
  
-Are you fed up with GamesROB's minesweeper? So am I. If you have this bot and you show your frustration, it'll do 
-everything for you. It'll even lose for you All you have to do is type this simple line:
+Are you fed up with GamesROB's minesweeper? So am I. If you have this bot it'll do everything for you. To activate and 
+deactivate the bot, simply ping it. If it's not really doing anything for some reason, or you activate it while a 
+minesweeper game is running, ping it and say "do something", like this:
 
-`GamesROB's minesweeper sucks`
+`@Minesweeper do something`\
+or whatever your bot's name is instead of "Minesweeper"
 
-and just do whatever the bot tells you to do. If you want it to go back to normal, type
+That being said, minesweeper is inherently chance based so there's some chance you'll fail.
 
-`nvm its not actually that bad`
+Requires discord.py and python to run (obviously), as well as a discord bot\
+To get the discord.py, check out the [discord.py github page](https://github.com/Rapptz/discord.py) \
+As for your token, you can either replace the `open("token.txt", "r").read()` stuff with just a string of your 
+token or drop in a new text file called "token.txt" that contains your token. You'll also have to replace `name` with \
+the ID of your bot which you can get by left clicking on their name in developer mode or just by copying client ID in 
+the developer portal.
 
-That being said, minesweeper is inherently chance based so there's a decent chance you still fail and it'll calculate 
-those probabilities as best it can. It's quite simply a bad calculation though.
-
-requires discord.py and python3 to run, as well as a discord bot\
-to get the former check out the [discord.py github thing](https://github.com/Rapptz/discord.py) \
-also, as for your token, you can either replace the `open("token.txt", "r").read()` stuff with just a string of your 
-token or drop in a new text file called "token.txt" that contains your token.
-
-This bot uses a "single-point" algorithm and then basically guesses probabilities for tiles. It's nowhere near perfect 
-and can barely go a step further than the guaranteed spots. For better algorithms see 
-[this paper](https://dash.harvard.edu/bitstream/handle/1/14398552/BECERRA-SENIORTHESIS-2015.pdf?sequence=1). Also it's 
-seriously flawed and I'm going to be fixing it promptly.
+This bot simulates every possible configuration of bombs to get perfectly accurate probabilities, but it's not the most 
+efficient method. For better methods, check out [this paper](https://dash.harvard.edu/bitstream/handle/1/14398552/BECERRA-SENIORTHESIS-2015.pdf?sequence=1) 
+which I don't understand at all so I just did an insanely time-consuming version.
 
 If you want my bot on your server for some reason, which will basically be offline 99% of the time,
 [this is the link](https://discord.com/api/oauth2/authorize?client_id=797850288543367199&permissions=0&scope=bot). But 
-seriously, if you want to use this for some reason, you most likely don't want my bot. Just host it yourself.
+seriously, if you want to use this for some reason, you most likely don't want the bot I run. You should probably host 
+it yourself.

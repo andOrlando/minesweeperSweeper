@@ -2,161 +2,117 @@
 0-8 = normal numbers
 9 = unknown
 10 = bomb
+
+What does it do?
+-gets every space that borders anything 0-8
+-creates all possible permutations of bombs or not
+-checks through every possibility to see if they're valid using logic
+
 """
 from math import floor
 from constants import *
-from random import choice
+from itertools import product
+from emoji_to_matrix import matrix_to_pretty
 
 letters = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 
 class MatrixSolver:
 
-    def __init__(self, matrix, debug):
+    def __init__(self, matrix, debug = False):
         self.matrix = matrix
         self.col_length = len(matrix)
         self.row_length = len(matrix[0])
-        self.probabilities = []
         self.debug = debug
+        self.coords = product(range(self.row_length), range(self.col_length))
 
     def get_command(self):
         result = self.solve()
-        return f"{result[2] if len(result) == 3 else ''}{letters[result[0]]}{result[1] + 1}" if not result is None else None
-
-    # returns x, y and whether it's a chance or not
-    def solve(self):
-        # if first move, choose the middle
-        if self.count_all_of(BLANK_TILE) == self.col_length * self.row_length:
-            return floor((len(self.x(0))) / 2), floor((len(self.y(0))) / 2)
-
-        # finds bombs from numbers
-        for y in range(len(self.matrix)):
-            for x in range(len(self.matrix[y])):
-                if self.matrix[y][x] in range(1, 9):
-
-                    # Safe values around the number
-                    safe = [False, False, False, False, False, False, False, False]
-
-                    # checks if it's in the far corners anywhere
-                    if x == 0: #min x
-                        safe[0], safe[3], safe[5] = [True for _ in range(3)]
-                    elif x == self.row_length - 1: #max x
-                        safe[2], safe[4], safe[7] = [True for _ in range(3)]
-                    if y == 0: #min y
-                        safe[0], safe[1], safe[2] = [True for _ in range(3)]
-                    elif y == self.col_length - 1: #max y
-                        safe[5], safe[6], safe[7] = [True for _ in range(3)]
-
-                    # checks for other blank spaces
-                    for i in range(8):
-                        if not safe[i]:
-                            # get the coord increments
-                            new_x, new_y = self.generate_new_coords(i)
-
-                            # if it's <= 8 it's a tile from 0-8
-                            if self.coords(x + new_x, y + new_y) <= 8:
-                                safe[i] = True
-
-                    # converts any unknown spaces into bombs if it can
-                    if safe.count(False) <= self.matrix[y][x]:
-                        for i in range(8):
-                            if not safe[i]:
-                                # get the coord increments
-                                new_x, new_y = self.generate_new_coords(i)
-
-                                # changes unknown to bomb
-                                if self.coords(x + new_x, y + new_y) == BLANK_TILE:
-                                    self.matrix[y + new_y][x + new_x] = BOMB
-
-                    # now that it knows bombs in the area, gives a move that would convert unknown into known if it can
-                    if self.count_in_radius(x, y, [BOMB]) == self.matrix[y][x]:
-                        for i in range(8):
-                            # get the coord increments
-                            new_x, new_y = self.generate_new_coords(i)
-
-                            if x + new_x in range(0, self.row_length) \
-                                    and y + new_y in range(0, self.col_length) \
-                                    and self.coords(x + new_x, y + new_y) == BLANK_TILE:
-                                return x + new_x, y + new_y
-
-                    # gets bomb count and available count for probabilities
-                    bomb_count = self.count_in_radius(x, y, [BOMB])
-                    available_count = self.count_in_radius(x, y, [BLANK_TILE])
-                    # adds probabilities to the list if it can't do anything else
-                    for i in range(8):
-                        tile = self.coords(x, y)
-                        if tile == BLANK_TILE:
-                            # get the coord increments
-                            new_x, new_y = self.generate_new_coords(i)
-                            if x + new_x in range(0, self.row_length) \
-                                    and y + new_y in range(0, self.col_length) \
-                                    and self.coords(x + new_x, y + new_y) == BLANK_TILE:
-
-                                denominator = available_count - bomb_count if available_count != bomb_count else 1
-                                probability_tuple = ((tile - bomb_count) / denominator, x + new_x, y + new_y)
-                                print(f"{letters[x+new_x]}{y+1} bc: {bomb_count} ac: {available_count} here: {self.coords(x, y)} prob: {probability_tuple[0]}")
-
-                                others = list(filter(
-                                    lambda item: probability_tuple[1] == item[1] and probability_tuple[2] == item[2],
-                                    self.probabilities
-                                ))
-
-                                # if there's already the same coords in there, use the highest probability.
-                                if len(others) != 0:
-                                    if others[0][0] <= probability_tuple[0]:
-                                        self.probabilities[self.probabilities.index(others[0])] = probability_tuple
-                                else:
-                                    self.probabilities.append(probability_tuple)
-
-        if len(self.probabilities) != 0:
-            min_probability = min(map(lambda item: item[0], self.probabilities))
-            final = choice(list(filter(lambda prob: prob[0] == min_probability, self.probabilities)))
-            return final[1], final[2], f"{int(min_probability * 100)}% chance of bomb: "
+        if not result is None: return f"{result[2]}{letters[result[0]]}{result[1] + 1}"
         return None
 
-    # counts total values
-    def count_all_of(self, number):
-        result = 0
-        for i in self.matrix:
-            for j in i:
-                if j == number:
-                    result += 1
-        return result
+    # returns x, y, string
+    def solve(self):
 
-    # gets column list at index
-    def y(self, index):
-        result = []
-        for i in self.matrix:
-            result.append(i[index])
-        return result
+        # gets every blank tile adjacent to a numbered tile and every numbered tile
+        blank_tiles = []
+        numbered_tiles = []
+        for x, y in self.coords:
 
-    # gets row list at index
-    def x(self, index):
-        return self.matrix[index]
+            if self.matrix[y][x] == BLANK_TILE:
+                if self.count_in_radius(self.matrix, x, y, 1, 2, 3, 4, 5, 6, 7, 8) > 0:
+                    blank_tiles.append((x, y))
 
-    # gets the value at the coords
-    def coords(self, x, y):
-        return self.matrix[y][x]
+            elif self.matrix[y][x] in range(1, 9):
+                numbered_tiles.append((x, y))
 
-    # gets the coords from row and item
-    # 0 is x, 1 is y
-    def get_coords(self, row, item):
-        row_index = self.matrix.index(row)
-        return row.index(item), row_index
 
-    def count_in_radius(self, x, y, accepted):
+        if self.debug: print(f"blank tiles: {str(blank_tiles)[1:len(str(blank_tiles))-1]}\n"
+              f"tiles: {str(numbered_tiles)[1:len(str(numbered_tiles))-1]}")
+
+
+        # creates every possible mine value for the length of spaces given
+        values = list(product((True, False), repeat=len(blank_tiles)))
+        value_lengths = len(blank_tiles)
+
+        # this is the total number of spaces for probabilities
+        total = 0
+        # this is the spaces and totals for each space
+        # spaces_and_totals = [[(tup[0], tup[1]), 0] for tup in blank_tiles]
+        totals = [0 for _ in range(value_lengths)]
+
+        for value in values:
+
+            # creates and fills the pseudo_matrix assuming what's dictated as bombs are bombs
+            temp_matrix = self.matrix
+            for i, (x, y) in enumerate(blank_tiles):
+                if value[i]: temp_matrix[y][x] = BOMB
+                else: temp_matrix[y][x] = BLANK_TILE
+
+            # checks every numbered tile for incorrectness
+            invalid = False
+            for x, y in numbered_tiles:
+                if self.count_in_radius(temp_matrix, x, y, BOMB) != self.matrix[y][x]:
+                    invalid = True
+                    break
+
+            # if it's not incorrect adds to totals
+            if not invalid:
+                total += 1
+                for i in range(value_lengths):
+                    # spaces_and_totals[i][1] += 1 if value[i] else 0
+                    if value[i]: totals[i] += 1
+                    if self.debug: matrix_to_pretty(temp_matrix)
+
+        # prints the thing if it's debugging
+        if self.debug: print(f"totals: {str(totals)[1:len(str(totals))-1]}\n\n")
+
+        # gets all items that are min
+        probabilities = [i/total for i in totals]
+        items = list(filter(
+            lambda j: j[2] == min(probabilities),
+            [(x, y, probabilities[i]) for i, x, y in enumerate(blank_tiles)]
+        ))
+
+        # returns the smallest value and also the chance if it's not 0
+        if len(items) == 0:
+            return int(self.row_length / 2), int(self.col_length / 2), ""
+        return items[0][0], items[0][1], f"{items[0][2]*100}% confident: " if items[0][2] != 0 else ""
+
+
+
+
+    def count_in_radius(self, matrix, x, y, *accepted):
         result = 0
         for i in range(8):
             new_x, new_y = self.generate_new_coords(i)
-            # try/excepts in case it picks something that's out of bounds
-            try:
-                if self.coords(x + new_x, y + new_y) in accepted:
+            # if anything is out of bounds, ignores it
+            if len(matrix) > y + new_y >= 0 and len(matrix[0]) > x + new_x >= 0:
+                if matrix[y + new_y][x + new_x] in accepted:
                     result += 1
-            except IndexError:
-                pass
+
         return result
 
-    # generates x and y increments
     @staticmethod
     def generate_new_coords(i):
         return i % 3 - 1 if i < 4 else (i + 1) % 3 - 1, min(floor(max(0, i - 1) / 2) - 1, 1)

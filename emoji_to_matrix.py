@@ -17,7 +17,9 @@ header_message = "**Minesweeper:**\nSend the coordinate of where you want to dig
 rematch_message = "🔄 Rematch"
 game_header = "⬛ 🇦 🇧 🇨 🇩 🇪 🇫 🇬"
 
-def emoji_to_matrix(message):
+def emoji_to_matrix(message, debug=False):
+    if debug: print(message.content)
+
     content = message.content
     # checks to make sure the game header is in the message and it's not the rematch message
     if not game_header in content or rematch_message in content:
@@ -51,3 +53,14 @@ def emoji_to_number(emoji):
         return 9
     elif ":bombs" in emoji:
         return int(emoji[emoji.index(":bombs")+6:emoji.index(":bombs")+7])
+
+def matrix_to_pretty(matrix):
+    for row in matrix:
+        result = ""
+        for i in row:
+            if i == 9: result += "- "
+            elif i == 0: result += "  "
+            elif i == 10: result += "* "
+            else: result += f"{i} "
+        print(result)
+    print("\n")
