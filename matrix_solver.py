@@ -12,11 +12,12 @@ letters = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
 class MatrixSolver:
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, debug):
         self.matrix = matrix
         self.col_length = len(matrix)
         self.row_length = len(matrix[0])
         self.probabilities = []
+        self.debug = debug
 
     def get_command(self):
         result = self.solve()
@@ -37,13 +38,13 @@ class MatrixSolver:
                     safe = [False, False, False, False, False, False, False, False]
 
                     # checks if it's in the far corners anywhere
-                    if x == 0:
+                    if x == 0: #min x
                         safe[0], safe[3], safe[5] = [True for _ in range(3)]
-                    elif x == self.row_length - 1:
+                    elif x == self.row_length - 1: #max x
                         safe[2], safe[4], safe[7] = [True for _ in range(3)]
-                    if y == 0:
+                    if y == 0: #min y
                         safe[0], safe[1], safe[2] = [True for _ in range(3)]
-                    elif y == self.col_length - 1:
+                    elif y == self.col_length - 1: #max y
                         safe[5], safe[6], safe[7] = [True for _ in range(3)]
 
                     # checks for other blank spaces
@@ -83,25 +84,29 @@ class MatrixSolver:
                     available_count = self.count_in_radius(x, y, [BLANK_TILE])
                     # adds probabilities to the list if it can't do anything else
                     for i in range(8):
-                        # get the coord increments
-                        new_x, new_y = self.generate_new_coords(i)
-                        if x + new_x in range(0, self.row_length) \
-                                and y + new_y in range(0, self.col_length) \
-                                and self.coords(x + new_x, y + new_y) == BLANK_TILE:
+                        tile = self.coords(x, y)
+                        if tile == BLANK_TILE:
+                            # get the coord increments
+                            new_x, new_y = self.generate_new_coords(i)
+                            if x + new_x in range(0, self.row_length) \
+                                    and y + new_y in range(0, self.col_length) \
+                                    and self.coords(x + new_x, y + new_y) == BLANK_TILE:
 
-                            denominator = available_count - bomb_count if available_count != bomb_count else 1
-                            probability_tuple = ((self.matrix[y][x] - bomb_count) / denominator, x + new_x, y + new_y)
-                            others = list(filter(
-                                lambda item: probability_tuple[1] == item[1] and probability_tuple[2] == item[2],
-                                self.probabilities
-                            ))
+                                denominator = available_count - bomb_count if available_count != bomb_count else 1
+                                probability_tuple = ((tile - bomb_count) / denominator, x + new_x, y + new_y)
+                                print(f"{letters[x+new_x]}{y+1} bc: {bomb_count} ac: {available_count} here: {self.coords(x, y)} prob: {probability_tuple[0]}")
 
-                            # if there's already the same coords in there, use the highest probability.
-                            if len(others) != 0:
-                                if others[0][0] <= probability_tuple[0]:
-                                    self.probabilities[self.probabilities.index(others[0])] = probability_tuple
-                            else:
-                                self.probabilities.append(probability_tuple)
+                                others = list(filter(
+                                    lambda item: probability_tuple[1] == item[1] and probability_tuple[2] == item[2],
+                                    self.probabilities
+                                ))
+
+                                # if there's already the same coords in there, use the highest probability.
+                                if len(others) != 0:
+                                    if others[0][0] <= probability_tuple[0]:
+                                        self.probabilities[self.probabilities.index(others[0])] = probability_tuple
+                                else:
+                                    self.probabilities.append(probability_tuple)
 
         if len(self.probabilities) != 0:
             min_probability = min(map(lambda item: item[0], self.probabilities))
